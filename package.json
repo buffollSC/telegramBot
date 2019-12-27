@@ -10,5 +10,12 @@
     "node": "13.5.0"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "config": "^3.2.4",
+    "moment": "^2.24.0",
+    "pg": "^7.16.0",
+    "telegraf": "^3.34.1",
+    "telegraf-calendar-telegram": "^1.5.7"
+  }
 }
