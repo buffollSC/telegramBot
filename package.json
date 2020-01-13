@@ -14,8 +14,13 @@
   "dependencies": {
     "config": "^3.2.4",
     "moment": "^2.24.0",
+<<<<<<< HEAD
+    "pg": "^7.17.1",
+    "telegraf": "^3.35.0",
+=======
     "pg": "^7.16.0",
     "telegraf": "^3.34.1",
+>>>>>>> 75b2bed8082e50e3991a3405f6e473ffb4b35da1
     "telegraf-calendar-telegram": "^1.5.7"
   }
 }
