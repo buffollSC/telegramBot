@@ -48,7 +48,7 @@ const superWizard = new WizardScene('super-wizard',
   
     (ctx) => {
       ctx.reply('Введите пароль: ');
-      ArrToLogin.push(ctx.message.text);
+      arrLogin.push(ctx.message.text);
       return ctx.wizard.next()
     },
   
@@ -118,7 +118,7 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.scene.leave()
     }
   )
-  const getData = async (valueLogin, valuePass) => {
+  const getData = async(valueLogin, valuePass) => {
     let tempArr = [];
     const result = await client
       .query(`SELECT sfid,email,password__c,office__c FROM salesforce.contact WHERE email = '${valueLogin}'
