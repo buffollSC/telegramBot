@@ -55,24 +55,24 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.wizard.next()
     },
   
-    async (ctx) => {
-      arrLogin.push(ctx.message.text);
-      Login = arrLogin[0];
-      Pass = arrLogin[1];
-      const result = await getData(Login, Pass)
-      arrLogin.length = 0;
-      if (result.length === 4) {
-        ctx.scene.session.state = {
-          result: result
-        }
-        ctx.reply('Авторизация прошла успешно', successLogin);
-        return ctx.wizard.next()
-      } else if (result.length === 0) {
+//     async (ctx) => {
+//       arrLogin.push(ctx.message.text);
+//       Login = arrLogin[0];
+//       Pass = arrLogin[1];
+//       const result = await getData(Login, Pass)
+//       arrLogin.length = 0;
+//       if (result.length === 4) {
+//         ctx.scene.session.state = {
+//           result: result
+//         }
+//         ctx.reply('Авторизация прошла успешно', successLogin);
+//         return ctx.wizard.next()
+//       } else if (result.length === 0) {
   
-        ctx.reply('Неправильный логин и/или пароль, Если хотите повторить попытку,  напишите что-нибудь');
-        return ctx.scene.leave()
-      }
-    },
+//         ctx.reply('Неправильный логин и/или пароль, Если хотите повторить попытку,  напишите что-нибудь');
+//         return ctx.scene.leave()
+//       }
+//     },
   
     stepHandler,
   
