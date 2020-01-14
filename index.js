@@ -67,6 +67,7 @@ const getBalance = async (valueId) => {
     for (let [key, value] of Object.entries(values)) {
       if (key.toUpperCase() === 'REMINDER__C') {
         arrQuery.push(value);
+<<<<<<< HEAD
       }
     }
   }
@@ -156,6 +157,91 @@ const superWizard = new WizardScene('super-wizard',
       ctx.reply('Спасибо, запрос будет обработан.',successLogin);
       return 0;
     }
+=======
+      }
+    }
+  }
+  if (!arrQuery.length) {
+    totalAmount = 0;
+  }
+  const reducer = (current, currentValue) => current + currentValue;
+  var totalAmount = arrQuery.reduce(reducer);
+  return totalAmount;
+};
+
+const superWizard = new WizardScene('super-wizard',
+  (ctx) => {
+    ctx.scene.session.state = {}
+    ctx.reply('Для авторизации введите логин или email: ');
+    return ctx.wizard.next()
+  },
+  (ctx) => {
+    ctx.reply('Введите пароль: ');
+    arrLoginAndPassword.push(ctx.message.text);
+    return ctx.wizard.next()
+  },
+  async (ctx) => {
+    arrLoginAndPassword.push(ctx.message.text);
+    Login = arrLoginAndPassword[0];
+    Password = arrLoginAndPassword[1];
+    const allInformaion = await getDataForAuthorization(Login, Password)
+    arrLoginAndPassword.length = 0;
+    if (allInformaion.length === 4) {
+      ctx.scene.session.state = {
+        allInformaion : allInformaion
+      }
+      ctx.reply('Авторизация прошла успешно', successLogin);
+      return ctx.wizard.next()
+    }else if(allInformaion.length === 0) {
+      ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
+      return ctx.scene.leave()
+    }
+  },
+  
+  stepHandler,
+  (ctx) => {
+    let callbackData = ctx.update.callback_query.data;
+    ctx.scene.session.state.allInformaion.push(callbackData);
+    if(callbackData.toUpperCase() === 'CANCEL') {
+      ctx.reply('Главное меню', successLogin);
+      return ctx.wizard.back();
+    }
+    else if(callbackData.toUpperCase() === 'TODAY') {
+      ctx.reply('Введите сумму в поле Amount?');
+      return ctx.wizard.selectStep(6);
+    }
+    else if(callbackData.toUpperCase() === 'CALENDAR') {
+      ctx.reply('Запишите дату в формате YYYY-MM-DD');
+      return ctx.wizard.next();
+    }
+  }, 
+  (ctx) => {
+    arrDate.push(ctx.message.text);
+    ctx.reply('Введите сумму в поле Amount?');
+    return ctx.wizard.next();
+  }, 
+  (ctx) => {
+    arrCreatCard.push(ctx.message.text);
+    ctx.reply('Напишите описание в поле Description?');
+    return ctx.wizard.next();
+  }, 
+    // (ctx) => {
+    //   arrCreatCard.push(ctx.message.text)
+    //   let userId = ctx.scene.session.state.result[0];
+    //   let Amount = arrCreatCard[0];
+    //   let Description = arrCreatCard[1];
+    //   let cardDate = new Date().toUTCString();
+  
+    //   if (arrDate.length !== 0) {
+    //     cardDate = new Date(arrDate[0]).toUTCString();
+    //   }
+    //   setBalance(Amount, Description, userId, cardDate);
+    //   arrCreatCard.length = 0;
+    //   arrDate.length = 0;
+    //   ctx.reply('Спасибо, запрос будет обработан.');
+    //   return ctx.scene.leave()
+    // }
+>>>>>>> 8ef7c23c15abf133fb75390ba8d9e3396b1704cf
   )
 stepHandler.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformaion[0];
@@ -171,6 +257,17 @@ stepHandler.action('createCard', (ctx) => {
   ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
   return ctx.wizard.next()
 })
+<<<<<<< HEAD
+=======
+// const setBalance = async (Amount, Description, userId, cardDate) => {
+//   var parsedAmount = parseFloat(Amount, 10);
+//   const MONTHLYFAKE = 'a012w000000VhXsAAK';
+//   await client.query(`INSERT INTO salesforce.expense_card__c
+//   (Name, Amount__c, Card_Keeper__c, Card_Date__c,Description__c, Monthly_Expense__c, ExterId__c)
+//   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
+// };
+  
+>>>>>>> 8ef7c23c15abf133fb75390ba8d9e3396b1704cf
 // stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
   client.connect();
   const bot = new Telegraf(API_TOKEN);
