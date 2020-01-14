@@ -21,102 +21,12 @@ const API_TOKEN = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
 const URL = process.env.APP_URL || applicationURL;
 
-//-----------------------------------------------------------------------
+//----------------------------------------------------------
 
 let client = new Client({
     connectionString: process.env.DATABASE_URL || dataBase,
     ssl: true
 });
-
-const superWizard = new WizardScene('super-wizard',
-(ctx) => {
-  ctx.scene.session.state = {}
-  ctx.reply('Здравствуйте,для авторизации введите логин или email: ');
-  return ctx.wizard.next()
-},
-(ctx) => {
-  ctx.reply('Введите пароль: ');
-  arrLoginAndPassword.push(ctx.message.text);
-  return ctx.wizard.next()
-},
-
-async (ctx) => {
-  arrLoginAndPassword.push(ctx.message.text);
-  Login = arrLoginAndPassword[0];
-  Password = arrLoginAndPassword[1];
-  const result = await getData(Login, Password)
-  arrLoginAndPassword.length = 0;
-  if (result.length === 4) {
-    ctx.scene.session.state = {
-      result : result
-    }
-    ctx.reply('Авторизация прошла успешно', successLogin);
-    return ctx.wizard.next()
-  } else if (result.length === 0) {
-
-    ctx.reply('Неправильный логин и/или пароль');
-    return ctx.scene.leave()
-  }
-},
-
-stepHandler,
-
-// (ctx) => {
-
-//   let callbackData = ctx.update.callback_query.data;
-//   ctx.scene.session.state.result.push(callbackData);
-
-//   if (callbackData.toUpperCase() === 'CANCEL') {
-//     ctx.reply('Авторизация прошла успешно', successLogin);
-//     return ctx.wizard.back()
-//   }
-//   else if (callbackData.toUpperCase() === 'TODAY') {
-//     ctx.reply('Что записывать в поле Amount?');
-//     return ctx.wizard.selectStep(6)
-//   }
-//   else if (callbackData.toUpperCase() === 'CALENDAR') {
-//     ctx.reply('Напишите дату в формате YYYY-MM-DD Например: 2012-11-28');
-//     return ctx.wizard.next()
-//   }
-// }, 
-// (ctx) => {
-//   arrDate.push(ctx.message.text)
-//   ctx.reply('Что записывать в поле Amount?');
-//   return ctx.wizard.next()
-// }, 
-// (ctx) => {
-//   arrCard.push(ctx.message.text)
-//   ctx.reply('Что записывать в поле Description?');
-//   return ctx.wizard.next()
-// }, 
-// (ctx) => {
-//   arrCard.push(ctx.message.text)
-//   let userId = ctx.scene.session.state.result[0];
-//   let Amount = arrCard[0];
-//   let Description = arrCard[1];
-//   let cardDate = new Date().toUTCString();
-
-//   if (arrDate.length !== 0) {
-//     cardDate = new Date(arrDate[0]).toUTCString();
-//   }
-//   setBalance(Amount, Description, userId, cardDate);
-//   arrCard.length = 0;
-//   arrDate.length = 0;
-//   ctx.reply('Спасибо, запрос будет обработан.');
-//   return ctx.scene.leave()
-// }
-)
-
-
-
-
-
-
-
-
-
-
-
 const stepHandler = new Composer();
 
 // stepHandler.action('balance', async (ctx) => {
@@ -133,40 +43,38 @@ const stepHandler = new Composer();
   
 stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
 
-<<<<<<< HEAD
-
-=======
 const superWizard = new WizardScene('super-wizard',
+
     (ctx) => {
       ctx.scene.session.state = {}
-      ctx.reply('Введите логин: ');
+      ctx.reply('Здравствуйте,для авторизации введите логин или email: ');
       return ctx.wizard.next()
     },
   
     (ctx) => {
       ctx.reply('Введите пароль: ');
-      arrLogin.push(ctx.message.text);
+      arrLoginAndPassword.push(ctx.message.text);
       return ctx.wizard.next()
     },
   
-//     async (ctx) => {
-//       arrLogin.push(ctx.message.text);
-//       Login = arrLogin[0];
-//       Pass = arrLogin[1];
-//       const result = await getData(Login, Pass)
-//       arrLogin.length = 0;
-//       if (result.length === 4) {
-//         ctx.scene.session.state = {
-//           result: result
-//         }
-//         ctx.reply('Авторизация прошла успешно', successLogin);
-//         return ctx.wizard.next()
-//       } else if (result.length === 0) {
+    // async (ctx) => {
+    //   arrLoginAndPassword.push(ctx.message.text);
+    //   Login = arrLoginAndPassword[0];
+    //   Password = arrLoginAndPassword[1];
+    //   const result = await getData(Login, Password)
+    //   arrLoginAndPassword.length = 0;
+    //   if (result.length === 4) {
+    //     ctx.scene.session.state = {
+    //       result : result
+    //     }
+    //     ctx.reply('Авторизация прошла успешно', successLogin);
+    //     return ctx.wizard.next()
+    //   } else if (result.length === 0) {
   
-//         ctx.reply('Неправильный логин и/или пароль, Если хотите повторить попытку,  напишите что-нибудь');
-//         return ctx.scene.leave()
-//       }
-//     },
+    //     ctx.reply('Неправильный логин и/или пароль');
+    //     return ctx.scene.leave()
+    //   }
+    // },
   
     stepHandler,
   
@@ -215,7 +123,6 @@ const superWizard = new WizardScene('super-wizard',
     //   return ctx.scene.leave()
     // }
   )
->>>>>>> b5a94c78faba76ab8dd661f47bfb74a92436a2f9
   // const getData = async(valueLogin, valuePass) => {
   //   let tempArr = [];
   //   const result = await client
