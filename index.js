@@ -152,7 +152,7 @@ stepHandler.action('balance', async (ctx) => {
   return 0;
 })
 stepHandler.action('logout', async (ctx) => {
-  ctx.reply('Для подтверждения нажмите еще раз на кнопку "Выход"');
+  ctx.reply('Для авторизации нажмите любую кнопку');
   return ctx.scene.leave();
 })
 // const setBalance = async (Amount, Description, userId, cardDate) => {
