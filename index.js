@@ -58,6 +58,25 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
   }
   return arrReturn;
 };
+const getBalance = async (valueId) => {
+  let arrQuery = [];
+  const allInformaion = await client.query(`SELECT sfid, Reminder__c, Keeper__c 
+  FROM salesforce.Monthly_Expense__c 
+  WHERE Keeper__c = '${valueId}';`)
+  for (let [keys, values] of Object.entries(allInformaion.rows)) {
+    for (let [key, value] of Object.entries(values)) {
+      if (key.toUpperCase() === 'REMINDER__C') {
+        arrQuery.push(value);
+      }
+    }
+  }
+  if (!arrQuery.length) {
+    totalAmount = 0;
+  }
+  const reducer = (current, currentValue) => current + currentValue;
+  var totalAmount = arrQuery.reduce(reducer);
+  return totalAmount;
+};
 
 const superWizard = new WizardScene('super-wizard',
   (ctx) => {
@@ -87,6 +106,8 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.scene.leave()
     }
   },
+  
+  stepHandler,
   (ctx) => {
     let callbackData = ctx.update.callback_query.data;
     ctx.scene.session.state.allInformaion.push(callbackData);
@@ -130,26 +151,6 @@ const superWizard = new WizardScene('super-wizard',
     //   return ctx.scene.leave()
     // }
   )
-const getBalance = async (valueId) => {
-  let arrQuery = [];
-  const allInformaion = await client.query(`SELECT sfid, Reminder__c, Keeper__c 
-  FROM salesforce.Monthly_Expense__c 
-  WHERE Keeper__c = '${valueId}';`)
-  for (let [keys, values] of Object.entries(allInformaion.rows)) {
-    for (let [key, value] of Object.entries(values)) {
-      if (key.toUpperCase() === 'REMINDER__C') {
-        arrQuery.push(value);
-      }
-    }
-  }
-  if (!arrQuery.length) {
-    totalAmount = 0;
-  }
-  const reducer = (current, currentValue) => current + currentValue;
-  var totalAmount = arrQuery.reduce(reducer);
-  return totalAmount;
-};
-
 stepHandler.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformaion[0];
   const allInformaionId = await getBalance(userId);
@@ -172,12 +173,8 @@ stepHandler.action('createCard', (ctx) => {
 //   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
 // };
   
-
-  
-stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
-
+// stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
   client.connect();
-  
   const bot = new Telegraf(API_TOKEN);
   bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
   bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
