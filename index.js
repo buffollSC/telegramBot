@@ -181,7 +181,8 @@ stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прош�
   const successLogin = extra
     .markdown().markup((msg) => msg.inlineKeyboard([
       msg.callbackButton('Текущий баланс', 'balance'),
-      msg.callbackButton('Создать карточку', 'createCard')
+      msg.callbackButton('Создать карточку', 'createCard'),
+      msg.callbackButton('Выход', 'logout')
     ]));
   
   const createExpenseCard = extra
