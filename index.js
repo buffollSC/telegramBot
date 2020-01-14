@@ -50,13 +50,11 @@ const superWizard = new WizardScene('super-wizard',
       ctx.reply('Здравствуйте,для авторизации введите логин или email: ');
       return ctx.wizard.next()
     },
-  
     (ctx) => {
       ctx.reply('Введите пароль: ');
       arrLoginAndPassword.push(ctx.message.text);
       return ctx.wizard.next()
     },
-  
     async (ctx) => {
       arrLoginAndPassword.push(ctx.message.text);
       Login = arrLoginAndPassword[0];
@@ -126,7 +124,9 @@ const superWizard = new WizardScene('super-wizard',
   const getData = async(valueLogin, valuePass) => {
     let tempArr = [];
     const result = await client
-      .query(`SELECT sfid,email,password__c,office__c FROM salesforce.contact WHERE email = '${valueLogin}'
+      .query(`SELECT sfid, email, password__c, office__c 
+      FROM salesforce.contact 
+      WHERE email = '${valueLogin}'
       AND password__c = '${valuePass}';`)
 
     for (let [keys, values] of Object.entries(result.rows)) {
