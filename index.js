@@ -142,7 +142,7 @@ const getBalance = async (valueId) => {
 stepHandler.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformaion[0];
   const allInformaionId = await getBalance(userId);
-  ctx.reply('Текущий баланс: ${allInformaionId}$', successLogin);
+  ctx.reply(`Текущий баланс: ${allInformaionId}$`, successLogin);
   return 0;
 })
 stepHandler.action('logout', 
@@ -152,7 +152,7 @@ async (ctx) => {
 })
 stepHandler.action('createCard', 
 (ctx) => {
-  ctx.reply('На какую дату хотите создать карточку?', createExpenseCard);
+  ctx.reply(`На какую дату вы хотите создать карточку?`, createExpenseCard);
   return 0;
 })
 // const setBalance = async (Amount, Description, userId, cardDate) => {
