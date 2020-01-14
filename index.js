@@ -30,13 +30,13 @@ let client = new Client({
 
 const getDataForAuthorization = async(valueLogin, valuePassword) => {
   let arrReturn = [];
-  const allInformation = await client
+  const result = await client
     .query(`SELECT sfid, email, password__c, office__c 
     FROM salesforce.contact 
     WHERE email = '${valueLogin}'
     AND password__c = '${valuePassword}';`)
 
-  for (let [keys, values] of Object.entries(allInformation.rows)) {
+  for (let [keys, values] of Object.entries(result.rows)) {
     for (let [key, value] of Object.entries(values)) {
       arrReturn.push(value);
     }
@@ -46,6 +46,21 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
   }
   return arrReturn;
 };
+
+const stepHandler = new Composer();
+// stepHandler.action('balance', async (ctx) => {
+//     let userId = ctx.scene.session.state.result[0]
+//     const resultId = await getBalance(userId)
+//     ctx.reply(`Текущий баланс: $ ${resultId}. Для продолжения напишите что-нибудь`)
+//     return ctx.scene.leave()
+// })
+  
+// stepHandler.action('createCard', (ctx) => {
+//     ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
+//     return ctx.wizard.next()
+// })
+  
+stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
 
 const superWizard = new WizardScene('super-wizard',
 
@@ -63,15 +78,15 @@ const superWizard = new WizardScene('super-wizard',
       arrLoginAndPassword.push(ctx.message.text);
       Login = arrLoginAndPassword[0];
       Password = arrLoginAndPassword[1];
-      const allInformation = await getDataForAuthorization(Login, Password)
+      const result = await getDataForAuthorization(Login, Password)
       arrLoginAndPassword.length = 0;
-      if (allInformation.length === 4) {
+      if (result.length === 4) {
         ctx.scene.session.state = {
-          allInformation : allInformation
+          result : result
         }
         ctx.reply('Авторизация прошла успешно', successLogin);
         return ctx.wizard.next()
-      } else if (allInformation.length === 0) {
+      } else if (result.length === 0) {
   
         ctx.reply('Неправильный логин и/или пароль');
         return ctx.scene.leave()
@@ -125,23 +140,6 @@ const superWizard = new WizardScene('super-wizard',
     //   return ctx.scene.leave()
     // }
   )
-
-const stepHandler = new Composer();
-// stepHandler.action('balance', async (ctx) => {
-//     let userId = ctx.scene.session.state.result[0]
-//     const resultId = await getBalance(userId)
-//     ctx.reply(`Текущий баланс: $ ${resultId}. Для продолжения напишите что-нибудь`)
-//     return ctx.scene.leave()
-// })
-  
-// stepHandler.action('createCard', (ctx) => {
-//     ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
-//     return ctx.wizard.next()
-// })
-  
-stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
-
-
  
   // const getBalance = async (valueId) => {
   //   let tempArr = [];
