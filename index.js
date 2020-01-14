@@ -21,7 +21,7 @@ const API_TOKEN = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
 const URL = process.env.APP_URL || applicationURL;
 
-//----------------------------------------------------------
+//-----------------------------------------------------------------
 
 let client = new Client({
     connectionString: process.env.DATABASE_URL || dataBase,
@@ -155,6 +155,10 @@ stepHandler.action('logout', async (ctx) => {
   ctx.reply('Для авторизации нажмите любую кнопку');
   return ctx.scene.leave();
 })
+stepHandler.action('createCard', (ctx) => {
+  ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
+  return ctx.wizard.next()
+})
 // const setBalance = async (Amount, Description, userId, cardDate) => {
 //   var parsedAmount = parseFloat(Amount, 10);
 //   const MONTHLYFAKE = 'a012w000000VhXsAAK';
@@ -163,10 +167,7 @@ stepHandler.action('logout', async (ctx) => {
 //   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
 // };
   
-// stepHandler.action('createCard', (ctx) => {
-//     ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
-//     return ctx.wizard.next()
-// })
+
   
 stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
 
