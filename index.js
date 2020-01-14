@@ -80,24 +80,22 @@ const superWizard = new WizardScene('super-wizard',
     },
     stepHandler,
   
-    // (ctx) => {
-  
-    //   let callbackData = ctx.update.callback_query.data;
-    //   ctx.scene.session.state.result.push(callbackData);
-  
-    //   if (callbackData.toUpperCase() === 'CANCEL') {
-    //     ctx.reply('Авторизация прошла успешно', successLogin);
-    //     return ctx.wizard.back()
-    //   }
-    //   else if (callbackData.toUpperCase() === 'TODAY') {
-    //     ctx.reply('Что записывать в поле Amount?');
-    //     return ctx.wizard.selectStep(6)
-    //   }
-    //   else if (callbackData.toUpperCase() === 'CALENDAR') {
-    //     ctx.reply('Напишите дату в формате YYYY-MM-DD Например: 2012-11-28');
-    //     return ctx.wizard.next()
-    //   }
-    // }, 
+    (ctx) => {
+      let callbackData = ctx.update.callback_query.data;
+      ctx.scene.session.state.allInformaion.push(callbackData);
+      if (callbackData.toUpperCase() === 'CANCEL') {
+        ctx.reply('Главное меню', successLogin);
+        return ctx.wizard.back()
+      }
+      else if (callbackData.toUpperCase() === 'TODAY') {
+        ctx.reply('Что записывать в поле Amount?');
+        return ctx.wizard.selectStep(6)
+      }
+      else if (callbackData.toUpperCase() === 'CALENDAR') {
+        ctx.reply('Напишите дату в формате YYYY-MM-DD');
+        return ctx.wizard.next()
+      }
+    }, 
     // (ctx) => {
     //   arrDate.push(ctx.message.text)
     //   ctx.reply('Что записывать в поле Amount?');
@@ -182,20 +180,16 @@ stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прош�
   bot.use(stage.middleware())
   bot.launch()
   
-  const successLogin = extra
-    .markdown().markup((msg) => msg.inlineKeyboard([
+  const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
       msg.callbackButton('Текущий баланс', 'balance'),
       msg.callbackButton('Создать карточку', 'createCard'),
       msg.callbackButton('Выход', 'logout')
     ]));
-  
-  const createExpenseCard = extra
-    .markdown().markup((msg) => msg.inlineKeyboard([
+  const createExpenseCard = extra.markdown().markup((msg) => msg.inlineKeyboard([
       msg.callbackButton('Сегодня', 'today'),
       msg.callbackButton('Календарь', 'calendar'),
       msg.callbackButton('Отмена', 'cancel')
     ]));
-  
   bot.catch((err, ctx) => {
     console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
   })
