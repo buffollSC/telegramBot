@@ -148,8 +148,8 @@ const getBalance = async (valueId) => {
 stepHandler.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformaion[0]
   const allInformaionId = await getBalance(userId)
-  ctx.reply(`Текущий баланс: ${allInformaionId}$. Для продолжения напишите что-нибудь`)
-  return ctx.reply(successLogin);
+  ctx.reply(`Текущий баланс: ${allInformaionId}$`, successLogin)
+  // return ctx.reply(successLogin);
 })
 
 // const setBalance = async (Amount, Description, userId, cardDate) => {
