@@ -30,13 +30,13 @@ let client = new Client({
 
 const getDataForAuthorization = async(valueLogin, valuePassword) => {
   let arrReturn = [];
-  const result = await client
+  const allInformaion = await client
     .query(`SELECT sfid, email, password__c, office__c 
     FROM salesforce.contact 
     WHERE email = '${valueLogin}'
     AND password__c = '${valuePassword}';`)
 
-  for (let [keys, values] of Object.entries(result.rows)) {
+  for (let [keys, values] of Object.entries(allInformaion.rows)) {
     for (let [key, value] of Object.entries(values)) {
       arrReturn.push(value);
     }
@@ -64,17 +64,17 @@ const superWizard = new WizardScene('super-wizard',
       arrLoginAndPassword.push(ctx.message.text);
       Login = arrLoginAndPassword[0];
       Password = arrLoginAndPassword[1];
-      const result = await getDataForAuthorization(Login, Password)
+      const allInformaion = await getDataForAuthorization(Login, Password)
       arrLoginAndPassword.length = 0;
-      if (result.length === 4) {
+      if (allInformaion.length === 4) {
         ctx.scene.session.state = {
-          result : result
+          allInformaion : allInformaion
         }
         ctx.reply('Авторизация прошла успешно', successLogin);
         return ctx.wizard.next()
-      } else if (result.length === 0) {
+      } else if (allInformaion.length === 0) {
   
-        ctx.reply('Неправильный логин и/или пароль');
+        ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
         return ctx.scene.leave()
       }
     },
@@ -125,13 +125,40 @@ const superWizard = new WizardScene('super-wizard',
     //   return ctx.scene.leave()
     // }
   )
+const getBalance = async (valueId) => {
+  let tempArr = [];
+  const allInformaion = await client.query(`SELECT sfid, Reminder__c, Keeper__c 
+  FROM salesforce.Monthly_Expense__c 
+  WHERE Keeper__c = '${valueId}';`)
+  for (let [keys, values] of Object.entries(allInformaion.rows)) {
+    for (let [key, value] of Object.entries(values)) {
+      if (key.toUpperCase() === 'REMINDER__C') {
+        tempArr.push(value);
+      }
+    }
+  }
+  if (!tempArr.length) {
+    totalAmount = 0;
+  }
+  const reducer = (accumulator, currentValue) => accumulator + currentValue;
+  var totalAmount = tempArr.reduce(reducer);
+  return totalAmount;
+};
 
-// stepHandler.action('balance', async (ctx) => {
-//     let userId = ctx.scene.session.state.result[0]
-//     const resultId = await getBalance(userId)
-//     ctx.reply(`Текущий баланс: $ ${resultId}. Для продолжения напишите что-нибудь`)
-//     return ctx.scene.leave()
-// })
+stepHandler.action('balance', async (ctx) => {
+  let userId = ctx.scene.session.state.allInformaion[0]
+  const allInformaionId = await getBalance(userId)
+  ctx.reply(`Текущий баланс: $ ${allInformaionId}. Для продолжения напишите что-нибудь`)
+  return ctx.scene.leave()
+})
+
+// const setBalance = async (Amount, Description, userId, cardDate) => {
+//   var parsedAmount = parseFloat(Amount, 10);
+//   const MONTHLYFAKE = 'a012w000000VhXsAAK';
+//   await client.query(`INSERT INTO salesforce.expense_card__c
+//   (Name, Amount__c, Card_Keeper__c, Card_Date__c,Description__c, Monthly_Expense__c, ExterId__c)
+//   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
+// };
   
 // stepHandler.action('createCard', (ctx) => {
 //     ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
@@ -140,36 +167,6 @@ const superWizard = new WizardScene('super-wizard',
   
 stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
 
-
- 
-  // const getBalance = async (valueId) => {
-  //   let tempArr = [];
-  //   const result = await client
-  //     .query(`SELECT sfid, Reminder__c, Keeper__c FROM salesforce.Monthly_Expense__c WHERE
-  //   Keeper__c = '${valueId}';`)
-
-  //   for (let [keys, values] of Object.entries(result.rows)) {
-  //     for (let [key, value] of Object.entries(values)) {
-  //       if (key.toUpperCase() === 'REMINDER__C') {
-  //         tempArr.push(value);
-  //       }
-  //     }
-  //   }
-  //   if (!tempArr.length) {
-  //     totalAmount = 0;
-  //   }
-  //   const reducer = (accumulator, currentValue) => accumulator + currentValue;
-  //   var totalAmount = tempArr.reduce(reducer);
-  //   return totalAmount;
-  // };
-  // const setBalance = async (Amount, Description, userId, cardDate) => {
-  //   var parsedAmount = parseFloat(Amount, 10);
-  //   const MONTHLYFAKE = 'a012w000000VhXsAAK';
-  //   await client
-  //     .query(`INSERT INTO salesforce.expense_card__c
-  //     (Name, Amount__c, Card_Keeper__c, Card_Date__c,Description__c, Monthly_Expense__c, ExterId__c)
-  //     VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
-  // };
   client.connect();
   
   const bot = new Telegraf(API_TOKEN);
