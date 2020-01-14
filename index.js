@@ -13,7 +13,7 @@ const extra = require('telegraf/extra');
 
 const { Client } = require('pg');
 
-const arrCard = [];
+const arrCreatCard = [];
 const arrDate = [];
 const arrLoginAndPassword = [];
 
@@ -21,7 +21,19 @@ const API_TOKEN = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
 const URL = process.env.APP_URL || applicationURL;
 const stepHandler = new Composer();
+
 //-----------------------------------------------------------------
+
+const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
+  msg.callbackButton('Текущий баланс', 'balance'),
+  msg.callbackButton('Создать карточку', 'createCard'),
+  msg.callbackButton('Выход', 'logout')
+]));
+const createExpenseCard = extra.markdown().markup((msg) => msg.inlineKeyboard([
+  msg.callbackButton('Сегодня', 'today'),
+  msg.callbackButton('Календарь', 'calendar'),
+  msg.callbackButton('Отмена', 'cancel')
+]));
 
 let client = new Client({
     connectionString: process.env.DATABASE_URL || dataBase,
@@ -70,50 +82,49 @@ const superWizard = new WizardScene('super-wizard',
       }
       ctx.reply('Авторизация прошла успешно', successLogin);
       return ctx.wizard.next()
-    }else if (allInformaion.length === 0) {
+    }else if(allInformaion.length === 0) {
       ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
       return ctx.scene.leave()
     }
   },
-  stepHandler,
   (ctx) => {
     let callbackData = ctx.update.callback_query.data;
     ctx.scene.session.state.allInformaion.push(callbackData);
     if(callbackData.toUpperCase() === 'CANCEL') {
       ctx.reply('Главное меню', successLogin);
-      return ctx.wizard.back()
+      return ctx.wizard.back();
     }
     else if(callbackData.toUpperCase() === 'TODAY') {
       ctx.reply('Введите сумму в поле Amount?');
-      return ctx.wizard.selectStep(6)
+      return ctx.wizard.selectStep(6);
     }
     else if(callbackData.toUpperCase() === 'CALENDAR') {
       ctx.reply('Запишите дату в формате YYYY-MM-DD');
-      return ctx.wizard.next()
+      return ctx.wizard.next();
     }
   }, 
   (ctx) => {
-    arrDate.push(ctx.message.text)
+    arrDate.push(ctx.message.text);
     ctx.reply('Введите сумму в поле Amount?');
-    return ctx.wizard.next()
+    return ctx.wizard.next();
   }, 
   (ctx) => {
-    arrCard.push(ctx.message.text)
+    arrCreatCard.push(ctx.message.text);
     ctx.reply('Напишите описание в поле Description?');
-    return ctx.wizard.next()
+    return ctx.wizard.next();
   }, 
     // (ctx) => {
-    //   arrCard.push(ctx.message.text)
+    //   arrCreatCard.push(ctx.message.text)
     //   let userId = ctx.scene.session.state.result[0];
-    //   let Amount = arrCard[0];
-    //   let Description = arrCard[1];
+    //   let Amount = arrCreatCard[0];
+    //   let Description = arrCreatCard[1];
     //   let cardDate = new Date().toUTCString();
   
     //   if (arrDate.length !== 0) {
     //     cardDate = new Date(arrDate[0]).toUTCString();
     //   }
     //   setBalance(Amount, Description, userId, cardDate);
-    //   arrCard.length = 0;
+    //   arrCreatCard.length = 0;
     //   arrDate.length = 0;
     //   ctx.reply('Спасибо, запрос будет обработан.');
     //   return ctx.scene.leave()
@@ -175,17 +186,6 @@ stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прош�
   bot.use(session())
   bot.use(stage.middleware())
   bot.launch()
-  
-  const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
-      msg.callbackButton('Текущий баланс', 'balance'),
-      msg.callbackButton('Создать карточку', 'createCard'),
-      msg.callbackButton('Выход', 'logout')
-    ]));
-  const createExpenseCard = extra.markdown().markup((msg) => msg.inlineKeyboard([
-      msg.callbackButton('Сегодня', 'today'),
-      msg.callbackButton('Календарь', 'calendar'),
-      msg.callbackButton('Отмена', 'cancel')
-    ]));
   bot.catch((err, ctx) => {
     console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
   })
