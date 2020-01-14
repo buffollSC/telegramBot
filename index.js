@@ -49,58 +49,55 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
 
 const stepHandler = new Composer();
 const superWizard = new WizardScene('super-wizard',
-
-    (ctx) => {
-      ctx.scene.session.state = {}
-      ctx.reply('Для авторизации введите логин или email: ');
+  (ctx) => {
+    ctx.scene.session.state = {}
+    ctx.reply('Для авторизации введите логин или email: ');
+    return ctx.wizard.next()
+  },
+  (ctx) => {
+    ctx.reply('Введите пароль: ');
+    arrLoginAndPassword.push(ctx.message.text);
+    return ctx.wizard.next()
+  },
+  async (ctx) => {
+    arrLoginAndPassword.push(ctx.message.text);
+    Login = arrLoginAndPassword[0];
+    Password = arrLoginAndPassword[1];
+    const allInformaion = await getDataForAuthorization(Login, Password)
+    arrLoginAndPassword.length = 0;
+    if (allInformaion.length === 4) {
+      ctx.scene.session.state = {
+        allInformaion : allInformaion
+      }
+      ctx.reply('Авторизация прошла успешно', successLogin);
       return ctx.wizard.next()
-    },
-    (ctx) => {
-      ctx.reply('Введите пароль: ');
-      arrLoginAndPassword.push(ctx.message.text);
+    }else if (allInformaion.length === 0) {
+      ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
+      return ctx.scene.leave()
+    }
+  },
+  stepHandler,
+  (ctx) => {
+    let callbackData = ctx.update.callback_query.data;
+    ctx.scene.session.state.allInformaion.push(callbackData);
+    if(callbackData.toUpperCase() === 'CANCEL') {
+      ctx.reply('Главное меню', successLogin);
+      return ctx.wizard.back()
+    }
+    else if(callbackData.toUpperCase() === 'TODAY') {
+      ctx.reply('Что записывать в поле Amount?');
+      return ctx.wizard.selectStep(6)
+    }
+    else if(callbackData.toUpperCase() === 'CALENDAR') {
+      ctx.reply('Напишите дату в формате YYYY-MM-DD');
       return ctx.wizard.next()
-    },
-    async (ctx) => {
-      arrLoginAndPassword.push(ctx.message.text);
-      Login = arrLoginAndPassword[0];
-      Password = arrLoginAndPassword[1];
-      const allInformaion = await getDataForAuthorization(Login, Password)
-      arrLoginAndPassword.length = 0;
-      if (allInformaion.length === 4) {
-        ctx.scene.session.state = {
-          allInformaion : allInformaion
-        }
-        ctx.reply('Авторизация прошла успешно', successLogin);
-        return ctx.wizard.next()
-      } else if (allInformaion.length === 0) {
-  
-        ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
-        return ctx.scene.leave()
-      }
-    },
-    stepHandler,
-  
-    (ctx) => {
-      let callbackData = ctx.update.callback_query.data;
-      ctx.scene.session.state.allInformaion.push(callbackData);
-      if (callbackData.toUpperCase() === 'CANCEL') {
-        ctx.reply('Главное меню', successLogin);
-        return ctx.wizard.back()
-      }
-      else if (callbackData.toUpperCase() === 'TODAY') {
-        ctx.reply('Что записывать в поле Amount?');
-        return ctx.wizard.selectStep(6)
-      }
-      else if (callbackData.toUpperCase() === 'CALENDAR') {
-        ctx.reply('Напишите дату в формате YYYY-MM-DD');
-        return ctx.wizard.next()
-      }
-    }, 
-    // (ctx) => {
-    //   arrDate.push(ctx.message.text)
-    //   ctx.reply('Что записывать в поле Amount?');
-    //   return ctx.wizard.next()
-    // }, 
+    }
+  }, 
+  (ctx) => {
+    arrDate.push(ctx.message.text)
+    ctx.reply('Что записывать в поле Amount?');
+    return ctx.wizard.next()
+  }, 
     // (ctx) => {
     //   arrCard.push(ctx.message.text)
     //   ctx.reply('Что записывать в поле Description?');
