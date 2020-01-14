@@ -48,20 +48,6 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
 };
 
 const stepHandler = new Composer();
-// stepHandler.action('balance', async (ctx) => {
-//     let userId = ctx.scene.session.state.result[0]
-//     const resultId = await getBalance(userId)
-//     ctx.reply(`Текущий баланс: $ ${resultId}. Для продолжения напишите что-нибудь`)
-//     return ctx.scene.leave()
-// })
-  
-// stepHandler.action('createCard', (ctx) => {
-//     ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
-//     return ctx.wizard.next()
-// })
-  
-stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
-
 const superWizard = new WizardScene('super-wizard',
 
     (ctx) => {
@@ -92,7 +78,6 @@ const superWizard = new WizardScene('super-wizard',
         return ctx.scene.leave()
       }
     },
-  
     stepHandler,
   
     // (ctx) => {
@@ -140,6 +125,22 @@ const superWizard = new WizardScene('super-wizard',
     //   return ctx.scene.leave()
     // }
   )
+
+// stepHandler.action('balance', async (ctx) => {
+//     let userId = ctx.scene.session.state.result[0]
+//     const resultId = await getBalance(userId)
+//     ctx.reply(`Текущий баланс: $ ${resultId}. Для продолжения напишите что-нибудь`)
+//     return ctx.scene.leave()
+// })
+  
+// stepHandler.action('createCard', (ctx) => {
+//     ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
+//     return ctx.wizard.next()
+// })
+  
+stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
+
+
  
   // const getBalance = async (valueId) => {
   //   let tempArr = [];
