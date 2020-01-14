@@ -146,12 +146,14 @@ const getBalance = async (valueId) => {
 };
 
 stepHandler.action('balance', async (ctx) => {
-  let userId = ctx.scene.session.state.allInformaion[0]
-  const allInformaionId = await getBalance(userId)
-  ctx.reply(`Текущий баланс: ${allInformaionId}$`, successLogin)
+  let userId = ctx.scene.session.state.allInformaion[0];
+  const allInformaionId = await getBalance(userId);
+  ctx.reply(`Текущий баланс: ${allInformaionId}$`, successLogin);
   return 0;
 })
-
+stepHandler.action('logout', async (ctx) => {
+  return ctx.scene.leave();
+})
 // const setBalance = async (Amount, Description, userId, cardDate) => {
 //   var parsedAmount = parseFloat(Amount, 10);
 //   const MONTHLYFAKE = 'a012w000000VhXsAAK';
