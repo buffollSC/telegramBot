@@ -126,30 +126,30 @@ const superWizard = new WizardScene('super-wizard',
     // }
   )
 const getBalance = async (valueId) => {
-  let tempArr = [];
+  let arrQuery = [];
   const allInformaion = await client.query(`SELECT sfid, Reminder__c, Keeper__c 
   FROM salesforce.Monthly_Expense__c 
   WHERE Keeper__c = '${valueId}';`)
   for (let [keys, values] of Object.entries(allInformaion.rows)) {
     for (let [key, value] of Object.entries(values)) {
       if (key.toUpperCase() === 'REMINDER__C') {
-        tempArr.push(value);
+        arrQuery.push(value);
       }
     }
   }
-  if (!tempArr.length) {
+  if (!arrQuery.length) {
     totalAmount = 0;
   }
-  const reducer = (accumulator, currentValue) => accumulator + currentValue;
-  var totalAmount = tempArr.reduce(reducer);
+  const reducer = (current, currentValue) => current + currentValue;
+  var totalAmount = arrQuery.reduce(reducer);
   return totalAmount;
 };
 
 stepHandler.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformaion[0]
   const allInformaionId = await getBalance(userId)
-  ctx.reply(`Текущий баланс: $ ${allInformaionId}. Для продолжения напишите что-нибудь`)
-  return ctx.scene.leave()
+  ctx.reply(`Текущий баланс: ${allInformaionId}$. Для продолжения напишите что-нибудь`)
+  return ctx.reply(successLogin);
 })
 
 // const setBalance = async (Amount, Description, userId, cardDate) => {
