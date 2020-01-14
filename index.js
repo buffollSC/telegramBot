@@ -57,24 +57,24 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.wizard.next()
     },
   
-    // async (ctx) => {
-    //   arrLoginAndPassword.push(ctx.message.text);
-    //   Login = arrLoginAndPassword[0];
-    //   Password = arrLoginAndPassword[1];
-    //   const result = await getData(Login, Password)
-    //   arrLoginAndPassword.length = 0;
-    //   if (result.length === 4) {
-    //     ctx.scene.session.state = {
-    //       result : result
-    //     }
-    //     ctx.reply('Авторизация прошла успешно', successLogin);
-    //     return ctx.wizard.next()
-    //   } else if (result.length === 0) {
+    async (ctx) => {
+      arrLoginAndPassword.push(ctx.message.text);
+      Login = arrLoginAndPassword[0];
+      Password = arrLoginAndPassword[1];
+      const result = await getData(Login, Password)
+      arrLoginAndPassword.length = 0;
+      if (result.length === 4) {
+        ctx.scene.session.state = {
+          result : result
+        }
+        ctx.reply('Авторизация прошла успешно', successLogin);
+        return ctx.wizard.next()
+      } else if (result.length === 0) {
   
-    //     ctx.reply('Неправильный логин и/или пароль');
-    //     return ctx.scene.leave()
-    //   }
-    // },
+        ctx.reply('Неправильный логин и/или пароль');
+        return ctx.scene.leave()
+      }
+    },
   
     stepHandler,
   
@@ -123,22 +123,22 @@ const superWizard = new WizardScene('super-wizard',
     //   return ctx.scene.leave()
     // }
   )
-  // const getData = async(valueLogin, valuePass) => {
-  //   let tempArr = [];
-  //   const result = await client
-  //     .query(`SELECT sfid,email,password__c,office__c FROM salesforce.contact WHERE email = '${valueLogin}'
-  //     AND password__c = '${valuePass}';`)
+  const getData = async(valueLogin, valuePass) => {
+    let tempArr = [];
+    const result = await client
+      .query(`SELECT sfid,email,password__c,office__c FROM salesforce.contact WHERE email = '${valueLogin}'
+      AND password__c = '${valuePass}';`)
 
-  //   for (let [keys, values] of Object.entries(result.rows)) {
-  //     for (let [key, value] of Object.entries(values)) {
-  //       tempArr.push(value);
-  //     }
-  //   }
-  //   if (!tempArr.length) {
-  //     tempArr.length = 0;
-  //   }
-  //   return tempArr;
-  // };
+    for (let [keys, values] of Object.entries(result.rows)) {
+      for (let [key, value] of Object.entries(values)) {
+        tempArr.push(value);
+      }
+    }
+    if (!tempArr.length) {
+      tempArr.length = 0;
+    }
+    return tempArr;
+  };
   // const getBalance = async (valueId) => {
   //   let tempArr = [];
   //   const result = await client
