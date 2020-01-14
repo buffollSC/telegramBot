@@ -20,7 +20,7 @@ const arrLoginAndPassword = [];
 const API_TOKEN = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
 const URL = process.env.APP_URL || applicationURL;
-
+const stepHandler = new Composer();
 //-----------------------------------------------------------------
 
 let client = new Client({
@@ -47,7 +47,6 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
   return arrReturn;
 };
 
-const stepHandler = new Composer();
 const superWizard = new WizardScene('super-wizard',
   (ctx) => {
     ctx.scene.session.state = {}
@@ -95,14 +94,14 @@ const superWizard = new WizardScene('super-wizard',
   }, 
   (ctx) => {
     arrDate.push(ctx.message.text)
-    ctx.reply('Что записывать в поле Amount?');
+    ctx.reply('Введите сумму в поле Amount?');
     return ctx.wizard.next()
   }, 
-    // (ctx) => {
-    //   arrCard.push(ctx.message.text)
-    //   ctx.reply('Что записывать в поле Description?');
-    //   return ctx.wizard.next()
-    // }, 
+  (ctx) => {
+    arrCard.push(ctx.message.text)
+    ctx.reply('Напишите описание в поле Description?');
+    return ctx.wizard.next()
+  }, 
     // (ctx) => {
     //   arrCard.push(ctx.message.text)
     //   let userId = ctx.scene.session.state.result[0];
