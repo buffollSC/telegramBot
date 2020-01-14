@@ -84,11 +84,11 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.wizard.back()
     }
     else if(callbackData.toUpperCase() === 'TODAY') {
-      ctx.reply('Что записывать в поле Amount?');
+      ctx.reply('Введите сумму в поле Amount?');
       return ctx.wizard.selectStep(6)
     }
     else if(callbackData.toUpperCase() === 'CALENDAR') {
-      ctx.reply('Напишите дату в формате YYYY-MM-DD');
+      ctx.reply('Введите дату в формате YYYY-MM-DD');
       return ctx.wizard.next()
     }
   }, 
@@ -142,16 +142,18 @@ const getBalance = async (valueId) => {
 stepHandler.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformaion[0];
   const allInformaionId = await getBalance(userId);
-  ctx.reply(`Текущий баланс: ${allInformaionId}$`, successLogin);
+  ctx.reply('Текущий баланс: ${allInformaionId}$', successLogin);
   return 0;
 })
-stepHandler.action('logout', async (ctx) => {
+stepHandler.action('logout', 
+async (ctx) => {
   ctx.reply('Для авторизации нажмите любую кнопку');
   return ctx.scene.leave();
 })
-stepHandler.action('createCard', (ctx) => {
-  ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
-  return ctx.wizard.next()
+stepHandler.action('createCard', 
+(ctx) => {
+  ctx.reply('На какую дату хотите создать карточку?', createExpenseCard);
+  return 0;
 })
 // const setBalance = async (Amount, Description, userId, cardDate) => {
 //   var parsedAmount = parseFloat(Amount, 10);
