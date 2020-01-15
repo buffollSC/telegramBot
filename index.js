@@ -1,7 +1,7 @@
 const myToken = '995308759:AAG0cSOOdlAP8r3n6tnaXtBx0wArse89YDA';
 const port = "5010";
 const dataBase = "postgres://lfodygkpkxwiut:97c34dfaa384d8fae43c0ad8db1e3acec41a5ba9eb618eb74557116f2e5b8dbf@ec2-54-228-246-214.eu-west-1.compute.amazonaws.com:5432/ddf4globq3eaio";
-const applicationURL = 'https://heroku-telegram-bots.herokuapp.com:443';
+const applicationURL = 'https://heroku-telegram-bots.herokuapp.com';
 
 const Telegraf = require('telegraf');
 const Composer = require('telegraf/composer');
