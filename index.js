@@ -79,7 +79,7 @@ const getBalance = async (valueId) => {
 };
 const setBalance = async (Amount, Description, userId, cardDate) => {
   var parsedAmount = parseFloat(Amount, 10);
-  const MONTHLYFAKE = 'a012w000000VhXsAAK';
+  const MONTHLYFAKE = 'a002w000001521UAKL';
   await client.query(`INSERT INTO salesforce.expense_card__c
   (Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, Monthly_Expense__c, ExterId__c)
   VALUES('${userId}', ${parsedAmount},'${userId}', '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
