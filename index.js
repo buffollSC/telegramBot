@@ -78,9 +78,9 @@ const getBalance = async (valueId) => {
   return totalAmount;
 };
 const setBalance = async (Amount, Description, userId, cardDate) => {
-  var parsedAmount = parseInt(Amount, 10);
+  var parsedAmount = parseFloat(Amount, 10);
   //const monthlyExpenseFake = 'a012w000002UCygAAG';
-  await client.query(`INSERT INTO salesforce.Expense_Card__c(sfid, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
+  await client.query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
 const superWizard = new WizardScene('super-wizard',
@@ -92,7 +92,7 @@ const superWizard = new WizardScene('super-wizard',
   (ctx) => {
     ctx.reply('Введите пароль: ');
     arrLoginAndPassword.push(ctx.message.text);
-    return ctx.wizard.next()
+    return ctx.wizard.next();
   },
   async (ctx) => {
     arrLoginAndPassword.push(ctx.message.text);
@@ -105,10 +105,10 @@ const superWizard = new WizardScene('super-wizard',
         allInformation : allInformation
       }
       ctx.reply('Авторизация прошла успешно', successLogin);
-      return ctx.wizard.next()
+      return ctx.wizard.next();
     }else if(allInformation.length === 0) {
       ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
-      return ctx.scene.leave()
+      return ctx.scene.leave();
     }
   },
   stepHandler,
