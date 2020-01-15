@@ -78,11 +78,10 @@ const getBalance = async (valueId) => {
   return totalAmount;
 };
 const setBalance = async (Amount, Description, userId, cardDate) => {
-  //var parsedAmount = parseFloat(Amount, 10);
+  var parsedAmount = parseFloat(Amount, 10);
   //const monthlyExpenseFake = 'a012w000002UCygAAG';
-  await client.query(`INSERT INTO salesforce.Expense_Card__c
-  (Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
-  VALUES('${userId}', ${Amount},'${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
+  await client.query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
+  VALUES('${userId}', ${parsedAmount},'${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
 const superWizard = new WizardScene('super-wizard',
   (ctx) => {
@@ -112,7 +111,6 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.scene.leave()
     }
   },
-  
   stepHandler,
   (ctx) => {
     let callbackData = ctx.update.callback_query.data;
@@ -154,7 +152,7 @@ const superWizard = new WizardScene('super-wizard',
     setBalance(Amount, Description, userId, cardDate);
     arrCreatCard.length = 0;
     arrDate.length = 0;
-    ctx.reply('Запрос будет обработан.', successLogin);
+    ctx.reply('Запрос обрабатывается.', successLogin);
     return ctx.wizard.selectStep(3);
     }
   )
@@ -169,7 +167,7 @@ stepHandler.action('logout', async (ctx) => {
   return ctx.scene.leave();
 })
 stepHandler.action('createCard', (ctx) => {
-  ctx.reply(`На какой день хотите создать карточку?`, createExpenseCard)
+  ctx.reply(`На какой день хотите создать карту?`, createExpenseCard)
   return ctx.wizard.next()
 })
   stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
@@ -182,6 +180,7 @@ stepHandler.action('createCard', (ctx) => {
   bot.use(session());
   bot.use(stage.middleware());
   bot.launch();
+
   bot.catch((err, ctx) => {
     console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
   })
