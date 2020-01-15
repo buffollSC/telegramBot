@@ -77,13 +77,13 @@ const getBalance = async (valueId) => {
   var totalAmount = arrQuery.reduce(reducer);
   return totalAmount;
 };
-// const setBalance = async (Amount, Description, userId, cardDate) => {
-//   var parsedAmount = parseFloat(Amount, 10);
-//   const MONTHLYFAKE = 'a012w000000VhXsAAK';
-//   await client.query(`INSERT INTO salesforce.expense_card__c
-//   (Name, Amount__c, Card_Keeper__c, Card_Date__c,Description__c, Monthly_Expense__c, ExterId__c)
-//   VALUES('${userId}', ${parsedAmount}, '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
-// };
+const setBalance = async (Amount, Description, userId, cardDate) => {
+  var parsedAmount = parseFloat(Amount, 10);
+  const MONTHLYFAKE = 'a012w000000VhXsAAK';
+  await client.query(`INSERT INTO salesforce.expense_card__c
+  (Name, Amount__c, Card_Keeper__c, Card_Date__c,Description__c, Monthly_Expense__c, ExterId__c)
+  VALUES('${userId}', ${parsedAmount},'${userId}', '${cardDate}', '${Description}', '${MONTHLYFAKE}', gen_random_uuid());`)
+};
 const superWizard = new WizardScene('super-wizard',
   (ctx) => {
     ctx.scene.session.state = {}
@@ -140,22 +140,22 @@ const superWizard = new WizardScene('super-wizard',
     ctx.reply('Напишите описание в поле Description?');
     return ctx.wizard.next();
   }, 
-    // (ctx) => {
-    //   arrCreatCard.push(ctx.message.text)
-    //   let userId = ctx.scene.session.state.allInformaionId[0];
-    //   let Amount = arrCreatCard[0];
-    //   let Description = arrCreatCard[1];
-    //   let cardDate = new Date().toUTCString();
+    (ctx) => {
+      arrCreatCard.push(ctx.message.text)
+      let userId = ctx.scene.session.state.allInformaionId[0];
+      let Amount = arrCreatCard[0];
+      let Description = arrCreatCard[1];
+      let cardDate = new Date().toUTCString();
   
-    //   if (arrDate.length !== 0) {
-    //     cardDate = new Date(arrDate[0]).toUTCString();
-    //   }
-    //   setBalance(Amount, Description, userId, cardDate);
-    //   arrCreatCard.length = 0;
-    //   arrDate.length = 0;
-    //   ctx.reply('Спасибо, запрос будет обработан.',successLogin);
-    //   return 0;
-    // }
+      if (arrDate.length !== 0) {
+        cardDate = new Date(arrDate[0]).toUTCString();
+      }
+      setBalance(Amount, Description, userId, cardDate);
+      arrCreatCard.length = 0;
+      arrDate.length = 0;
+      ctx.reply('Спасибо, запрос будет обработан.',successLogin);
+      return 0;
+    }
   )
 stepHandler.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformaion[0];
