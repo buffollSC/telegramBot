@@ -1,7 +1,7 @@
 const myToken = '995308759:AAG0cSOOdlAP8r3n6tnaXtBx0wArse89YDA';
 const port = "5010";
 const dataBase = "postgres://lfodygkpkxwiut:97c34dfaa384d8fae43c0ad8db1e3acec41a5ba9eb618eb74557116f2e5b8dbf@ec2-54-228-246-214.eu-west-1.compute.amazonaws.com:5432/ddf4globq3eaio";
-const applicationURL = 'https://heroku-telegram-bots.herokuapp.com';
+const applicationURL = 'https://heroku-telegram-bots.herokuapp.com:443';
 
 const Telegraf = require('telegraf');
 const Composer = require('telegraf/composer');
@@ -20,10 +20,8 @@ const arrLoginAndPassword = [];
 const API_TOKEN = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
 const URL = process.env.APP_URL || applicationURL;
-const stepHandler = new Composer();
 
 //-----------------------------------------------------------------
-
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
   msg.callbackButton('Текущий баланс', 'balance'),
   msg.callbackButton('Создать карточку', 'createCard'),
@@ -33,12 +31,29 @@ const createExpenseCard = extra.markdown().markup((msg) => msg.inlineKeyboard([
   msg.callbackButton('Сегодня', 'today'),
   msg.callbackButton('Календарь', 'calendar'),
   msg.callbackButton('Отмена', 'cancel')
-]));
-
+]))
+//------------------------------------------------------------------
 let client = new Client({
     connectionString: process.env.DATABASE_URL || dataBase,
     ssl: true
 });
+
+const stepHandler = new Composer();
+stepHandler.action('balance', async (ctx) => {
+  let userId = ctx.scene.session.state.allInformation[0];
+  const allInformationId = await getBalance(userId);
+  ctx.reply(`Текущий баланс: ${allInformationId}$`, successLogin);
+  return 0;
+})
+stepHandler.action('logout', async (ctx) => {
+  ctx.reply('Для авторизации нажмите любую кнопку');
+  return ctx.scene.leave();
+})
+stepHandler.action('createCard', (ctx) => {
+  ctx.reply(`На какой день хотите создать карту?`, createExpenseCard)
+  return ctx.wizard.next()
+})
+stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
 
 const getDataForAuthorization = async(valueLogin, valuePassword) => {
   let arrReturn = [];
@@ -158,21 +173,8 @@ const superWizard = new WizardScene('super-wizard',
     return ctx.wizard.selectStep(3);
     }
   )
-stepHandler.action('balance', async (ctx) => {
-  let userId = ctx.scene.session.state.allInformation[0];
-  const allInformationId = await getBalance(userId);
-  ctx.reply(`Текущий баланс: ${allInformationId}$`, successLogin);
-  return 0;
-})
-stepHandler.action('logout', async (ctx) => {
-  ctx.reply('Для авторизации нажмите любую кнопку');
-  return ctx.scene.leave();
-})
-stepHandler.action('createCard', (ctx) => {
-  ctx.reply(`На какой день хотите создать карту?`, createExpenseCard)
-  return ctx.wizard.next()
-})
-  stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
+
+ 
   client.connect();
   const bot = new Telegraf(API_TOKEN);
   bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
