@@ -42,13 +42,13 @@ let client = new Client({
 
 const getDataForAuthorization = async(valueLogin, valuePassword) => {
   let arrReturn = [];
-  const allInformaion = await client
+  const allInformation = await client
     .query(`SELECT sfid, email, password__c, office__c 
     FROM salesforce.contact 
     WHERE email = '${valueLogin}'
     AND password__c = '${valuePassword}';`)
 
-  for (let [keys, values] of Object.entries(allInformaion.rows)) {
+  for (let [keys, values] of Object.entries(allInformation.rows)) {
     for (let [key, value] of Object.entries(values)) {
       arrReturn.push(value);
     }
@@ -60,10 +60,10 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
 };
 const getBalance = async (valueId) => {
   let arrQuery = [];
-  const allInformaion = await client.query(`SELECT sfid, Reminder__c, Keeper__c 
+  const allInformation = await client.query(`SELECT sfid, Reminder__c, Keeper__c 
   FROM salesforce.Monthly_Expense__c 
   WHERE Keeper__c = '${valueId}';`)
-  for (let [keys, values] of Object.entries(allInformaion.rows)) {
+  for (let [keys, values] of Object.entries(allInformation.rows)) {
     for (let [key, value] of Object.entries(values)) {
       if (key.toUpperCase() === 'REMINDER__C') {
         arrQuery.push(value);
@@ -99,15 +99,15 @@ const superWizard = new WizardScene('super-wizard',
     arrLoginAndPassword.push(ctx.message.text);
     Login = arrLoginAndPassword[0];
     Password = arrLoginAndPassword[1];
-    const allInformaion = await getDataForAuthorization(Login, Password)
+    const allInformation = await getDataForAuthorization(Login, Password)
     arrLoginAndPassword.length = 0;
-    if (allInformaion.length === 4) {
+    if (allInformation.length === 4) {
       ctx.scene.session.state = {
-        allInformaion : allInformaion
+        allInformation : allInformation
       }
       ctx.reply('Авторизация прошла успешно', successLogin);
       return ctx.wizard.next()
-    }else if(allInformaion.length === 0) {
+    }else if(allInformation.length === 0) {
       ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
       return ctx.scene.leave()
     }
@@ -116,7 +116,7 @@ const superWizard = new WizardScene('super-wizard',
   stepHandler,
   (ctx) => {
     let callbackData = ctx.update.callback_query.data;
-    ctx.scene.session.state.allInformaion.push(callbackData);
+    ctx.scene.session.state.allInformation.push(callbackData);
     if(callbackData.toUpperCase() === 'CANCEL') {
       ctx.reply('Главное меню', successLogin);
       return ctx.wizard.back();
@@ -142,14 +142,14 @@ const superWizard = new WizardScene('super-wizard',
   }, 
   (ctx) => {
     arrCreatCard.push(ctx.message.text)
-    let userId = ctx.scene.session.state.allInformaion[0];
+    let userId = ctx.scene.session.state.allInformation[0];
     let Amount = arrCreatCard[0];
     let Description = arrCreatCard[1];
-    let cardDate = new Date().toUTCString();
+    let cardDate = new Date(arrDate[0]).toUTCString();
   
-    if (arrDate.length !== 0) {
-      cardDate = new Date(arrDate[0]).toUTCString();
-    }
+    // if (arrDate.length !== 0) {
+    //   cardDate = new Date(arrDate[0]).toUTCString();
+    // }
     setBalance(Amount, Description, userId, cardDate);
     arrCreatCard.length = 0;
     arrDate.length = 0;
@@ -158,9 +158,9 @@ const superWizard = new WizardScene('super-wizard',
     }
   )
 stepHandler.action('balance', async (ctx) => {
-  let userId = ctx.scene.session.state.allInformaion[0];
-  const allInformaionId = await getBalance(userId);
-  ctx.reply(`Текущий баланс: ${allInformaionId}$`, successLogin);
+  let userId = ctx.scene.session.state.allInformation[0];
+  const allInformationId = await getBalance(userId);
+  ctx.reply(`Текущий баланс: ${allInformationId}$`, successLogin);
   return 0;
 })
 stepHandler.action('logout', async (ctx) => {
