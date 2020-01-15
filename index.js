@@ -179,10 +179,10 @@ stepHandler.action('createCard', (ctx) => {
   bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
   bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
   
-  const stage = new Stage([superWizard], { default: 'super-wizard' })
-  bot.use(session())
-  bot.use(stage.middleware())
-  bot.launch()
+  const stage = new Stage([superWizard], { default: 'super-wizard' });
+  bot.use(session());
+  bot.use(stage.middleware());
+  bot.launch();
   bot.catch((err, ctx) => {
     console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
   })
