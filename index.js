@@ -80,8 +80,8 @@ const getBalance = async (valueId) => {
 const setBalance = async (Amount, Description, userId, cardDate) => {
   var parsedAmount = parseFloat(Amount, 10);
   //const monthlyExpenseFake = 'a012w000002UCygAAG';
-  await client.query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
-  VALUES('${userId}', ${parsedAmount},'${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
+  await client.query(`INSERT INTO salesforce.Expense_Card__c(sfid, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
+  VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
 const superWizard = new WizardScene('super-wizard',
   (ctx) => {
