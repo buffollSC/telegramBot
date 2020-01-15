@@ -153,8 +153,8 @@ const superWizard = new WizardScene('super-wizard',
     setBalance(Amount, Description, userId, cardDate);
     arrCreatCard.length = 0;
     arrDate.length = 0;
-    ctx.reply('Запрос будет обработан.',successLogin);
-    return 0;
+    ctx.reply('Запрос будет обработан.', successLogin);
+    return ctx.scene.leave();
     }
   )
 stepHandler.action('balance', async (ctx) => {
