@@ -75,28 +75,27 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
 };
 const getBalance = async (valueId) => {
   let arrQuery = [];
-  const allInformation = await client.query(`SELECT sfid, Reminder__c, Keeper__c 
+  totalAmount = 0;
+  const allInformation = await client
+  .query(`SELECT sfid, Reminder__c, Keeper__c 
   FROM salesforce.Monthly_Expense__c 
   WHERE Keeper__c = '${valueId}';`)
   for (let [keys, values] of Object.entries(allInformation.rows)) {
     for (let [key, value] of Object.entries(values)) {
-      if (key.toUpperCase() === 'REMINDER__C') {
+      if (key.toUpperCase() === 'Reminder__c') {
         arrQuery.push(value);
       }
     }
   }
-  if (!arrQuery.length) {
-    totalAmount = 0;
-  }
-  const reducer = (current, currentValue) => current + currentValue;
-  var totalAmount = arrQuery.reduce(reducer);
+  const totalAmountValue = (current, currentValue) => current + currentValue;
+  var totalAmount = arrQuery.reduce(totalAmountValue);
   return totalAmount;
 };
 
 const setBalance = async (Amount, Description, userId, cardDate) => {
   var parsedAmount = parseFloat(Amount, 10);
-  //const monthlyExpenseFake = 'a012w000002UCygAAG';
-  await client.query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
+  await client
+  .query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
 
@@ -128,10 +127,12 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.scene.leave();
     }
   },
+
   stepHandler,
   (ctx) => {
     let callbackData = ctx.update.callback_query.data;
     ctx.scene.session.state.allInformation.push(callbackData);
+
     if(callbackData.toUpperCase() === 'CANCEL') {
       ctx.reply('Главное меню', successLogin);
       return ctx.wizard.back();
@@ -160,16 +161,16 @@ const superWizard = new WizardScene('super-wizard',
     let userId = ctx.scene.session.state.allInformation[0];
     let Amount = arrCreatCard[0];
     let Description = arrCreatCard[1];
-    let cardDate = new Date().toUTCString();
+    let cardDate = new Date(arrDate[0]).toUTCString();
   
-    if (arrDate.length !== 0) {
-      cardDate = new Date(arrDate[0]).toUTCString();
-    }
+    // if (arrDate.length !== 0) {
+    //   cardDate = new Date(arrDate[0]).toUTCString();
+    // }
 
     setBalance(Amount, Description, userId, cardDate);
     arrCreatCard.length = 0;
     arrDate.length = 0;
-    ctx.reply('Запрос обрабатывается.', successLogin);
+    ctx.reply('Запрос обработан.', successLogin);
     return ctx.wizard.selectStep(3);
     }
   )
