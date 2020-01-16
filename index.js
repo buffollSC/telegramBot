@@ -81,7 +81,7 @@ const getBalance = async (valueId) => {
   WHERE Keeper__c = '${valueId}';`)
   for (let [keys, values] of Object.entries(allInformation.rows)) {
     for (let [key, value] of Object.entries(values)) {
-      if (key.toUpperCase() === 'Reminder__c') {
+      if (key.toUpperCase() === 'REMINDER__C') {
         arrQuery.push(value);
       }
     }
