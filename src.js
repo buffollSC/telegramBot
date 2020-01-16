@@ -18,10 +18,6 @@ const envToken = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
 const appURL = process.env.APP_appURL || applicationURL;
 const databaseURL = process.env.DATABASE_URL || dataBase;
-
-const arrInfaForExpCard = [];
-const arrDateForExpCard = [];
-const arrLoginAndPassword = [];
 //------------------------Menu-----------------------------------------
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
   msg.callbackButton('Текущий баланс', 'balance'),
@@ -97,6 +93,9 @@ const setExpenseCard = async (Amount, Description, userId, cardDate) => {
   .query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
   VALUES('${Description}', ${Amount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`);
 };
+const arrInfaForExpCard = [];
+const arrDateForExpCard = [];
+const arrLoginAndPassword = [];
 //-----------------------Authorization----------------------------------
 const authorizationUser = new telegrafScenesWizard('authorization-User',
   (ctx) => {
