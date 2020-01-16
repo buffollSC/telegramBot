@@ -21,7 +21,6 @@ const databaseURL = process.env.DATABASE_URL || dataBase;
 const arrInfaForExpCard = [];
 const arrDateForExpCard = [];
 const arrLoginAndPassword = [];
-
 //------------------------Menu-----------------------------------------
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
   msg.callbackButton('Текущий баланс', 'balance'),
