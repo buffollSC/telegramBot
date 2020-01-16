@@ -67,7 +67,7 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
       arrReturn.push(value);
     }
   }
-  if (arrReturn.length != 0) {
+  if (!arrReturn.length) {
     arrReturn.length = 0;
   }
   return arrReturn;
