@@ -117,7 +117,7 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     arrLoginAndPassword.length = 0;
     if (allInformation.length === 4) {
       ctx.scene.session.state = {
-        allInformation : allInformations
+        allInformation : allInformation
       }
       ctx.reply('Авторизация прошла успешно', successLogin);
       return ctx.wizard.next();
