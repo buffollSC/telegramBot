@@ -20,7 +20,7 @@ const appURL = process.env.APP_appURL || applicationURL;
 const databaseURL = process.env.DATABASE_URL || dataBase;
 
 const arrInfaForExpCard = [];
-const arrDateForExpCard;
+const arrDateForExpCard = [];
 const arrLoginAndPassword = [];
 //------------------------Menu-----------------------------------------
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
@@ -163,11 +163,11 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     let userId = ctx.scene.session.state.allInformation[0];
     let cardDate = new Date().toUTCString();
     if (arrDateForExpCard.length != 0) {
-      cardDate = new Date(arrDateForExpCard).toUTCString();
+      cardDate = new Date(arrDateForExpCard[0]).toUTCString();
     }
     setExpenseCard(Amount, Description, userId, cardDate);
     arrInfaForExpCard.length = 0;
-    arrDateForExpCard = 0;
+    arrDateForExpCard.length = 0;
     ctx.reply('Запрос обработан.', successLogin);
     return ctx.wizard.selectStep(3);
     }
