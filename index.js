@@ -116,7 +116,7 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     Password = arrLoginAndPassword[1];
     const allInformation = await getDataForAuthorization(Login, Password)
     arrLoginAndPassword.length = 0;
-    if (allInformation.length === 4) {
+    if (allInformation.length === 2) {
       ctx.scene.session.state = {
         allInformation : allInformation
       }
