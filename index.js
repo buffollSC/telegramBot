@@ -95,8 +95,8 @@ const getBalance = async (valueId) => {
 const setExpenseCard = async (Amount, Description, userId, cardDate) => {
   var parsedAmount = parseFloat(Amount, 10);
   await client
-  .query(`INSERT INTO salesforce.Expense_Card__c(Amount__c, Card_Keeper__c, Card_Date__c, Description__c, Name, ExterId__c)
-  VALUES('${parsedAmount}', '${userId}', '${cardDate}', '${Description}', '${userId}', 'gen_random_uuid());`);
+  .query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
+  VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`);
 };
 //-----------------------Authorization----------------------------------
 const authorizationUser = new telegrafScenesWizard('authorization-User',
