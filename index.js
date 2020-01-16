@@ -80,7 +80,7 @@ const getBalance = async (valueId) => {
   .query(`SELECT sfid, Reminder__c, Keeper__c 
   FROM salesforce.Monthly_Expense__c 
   WHERE Keeper__c = '${valueId}';`)
-  for (let [keys, values] of Object.entries(allInformation.rows)) {
+  for (let values of Object.values(allInformation.rows)) {
     for (let [key, value] of Object.entries(values)) {
       if (key.toUpperCase() === 'REMINDER__C') {
         arrQuery.push(value);
@@ -96,7 +96,7 @@ const setExpenseCard = async (Amount, Description, userId, cardDate) => {
   var parsedAmount = parseFloat(Amount, 10);
   await client
   .query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
-  VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
+  VALUES('${Description}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
 //-----------------------Authorization----------------------------------
 const authorizationUser = new telegrafScenesWizard('authorization-User',
