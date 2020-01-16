@@ -62,8 +62,8 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
     FROM salesforce.Contact 
     WHERE email = '${valueLogin}'
     AND password__c = '${valuePassword}';`)
-  for (let [values] of Object.values(allInformation.rows)) {
-    for (let [value] of Object.values(values)) {
+  for (let values of Object.values(allInformation.rows)) {
+    for (let value of Object.values(values)) {
       arrReturn.push(value);
     }
   }
@@ -116,7 +116,7 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     Password = arrLoginAndPassword[1];
     const allInformation = await getDataForAuthorization(Login, Password)
     arrLoginAndPassword.length = 0;
-    if (allInformation.length === 2) {
+    if (allInformation.length === 4) {
       ctx.scene.session.state = {
         allInformation : allInformation
       }
