@@ -1,18 +1,22 @@
 const myToken = '995308759:AAG0cSOOdlAP8r3n6tnaXtBx0wArse89YDA';
 const port = "5020";
 const dataBase = "postgres://lfodygkpkxwiut:97c34dfaa384d8fae43c0ad8db1e3acec41a5ba9eb618eb74557116f2e5b8dbf@ec2-54-228-246-214.eu-west-1.compute.amazonaws.com:5432/ddf4globq3eaio";
-const applicationURL = 'https://heroku-telegram-bots.herokuapp.com:443';
+const applicationURL = 'https://heroku-telegram-bots.herokuapp.com';
+
 const Telegraf = require('telegraf');
-const telegrafComposer = require('telegraf/composer');
-const session = require('telegraf/session');
 const telegrafStage = require('telegraf/stage');
-const markup = require('telegraf/markup');
+//const markup = require('telegraf/markup');
 const telegrafScenesWizard = require('telegraf/scenes/wizard');
 const extra = require('telegraf/extra');
 const { Client } = require('pg');
-const API_TOKEN = process.env.TOKEN || myToken;
+const telegrafComposer = require('telegraf/composer');
+const session = require('telegraf/session');
+
+const envToken = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
-const URL = process.env.APP_URL || applicationURL;
+const appURL = process.env.APP_appURL || applicationURL;
+const databaseURL = process.env.DATABASE_URL || dataBase;
+
 const arrInfaForExpCard = [];
 const arrDateForExpCard = [];
 const arrLoginAndPassword = [];
@@ -30,7 +34,7 @@ const createExpenseCard = extra.markdown().markup((msg) => msg.inlineKeyboard([
 ]))
 //---------------------Connection to database---------------------------
 let client = new Client({
-    connectionString: process.env.DATABASE_URL || dataBase,
+    connectionString: databaseURL,
     ssl: true
 });
 //---------------------Steps for user-----------------------------------
@@ -176,9 +180,9 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
   )
   client.connect();
 //-----------Creat bot-----------------------------------------
- const bot = new Telegraf(API_TOKEN);
- bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
- bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
+ const bot = new Telegraf(envToken);
+ bot.telegram.setWebhook(`${appURL}/bot${envToken}`);
+ bot.startWebhook(`/bot${envToken}`, null, PORT);
 
  const stage = new telegrafStage([authorizationUser], { default: 'authorization-User' });
  bot.use(session());
