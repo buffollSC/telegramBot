@@ -163,7 +163,7 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     let Amount = arrInfaForExpCard[0];
     let Description = arrInfaForExpCard[1];
     let userId = ctx.scene.session.state.allInformation[0];
-    let cardDate;
+    let cardDate = new Date().toUTCString();
     if (arrDateForExpCard.length != 0) {
       cardDate = new Date(arrDateForExpCard[0]).toUTCString();
     }
