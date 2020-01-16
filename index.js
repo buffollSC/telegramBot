@@ -17,20 +17,7 @@ const arrInfaForExpCard = [];
 const arrDateForExpCard = [];
 const arrLoginAndPassword = [];
 
-//-----------Creat bot-----------------------------------------
-client.connect();
-const bot = new Telegraf(API_TOKEN);
-bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
-bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
 
-const stage = new telegrafStage([authorizationUser], { default: 'authorization-User' });
-bot.use(session());
-bot.use(stage.middleware());
-bot.launch();
-//---------------------Handler errors----------------------------
-bot.catch((err, ctx) => {
-  console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
-})
 
 //------------------------Menu-----------------------------------------
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
@@ -108,6 +95,9 @@ const setExpenseCard = async (Amount, Description, userId, cardDate) => {
   .query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
+
+stepForUser.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successMsg))
+
 //-----------------------Authorization----------------------------------
 const authorizationUser = new telegrafScenesWizard('authorization-User',
   (ctx) => {
@@ -186,3 +176,17 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     return ctx.wizard.selectStep(3);
     }
   )
+//-----------Creat bot-----------------------------------------
+ client.connect();
+ const bot = new Telegraf(API_TOKEN);
+ bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
+ bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
+
+ const stage = new telegrafStage([authorizationUser], { default: 'authorization-User' });
+ bot.use(session());
+ bot.use(stage.middleware());
+ bot.launch();
+ //---------------------Handler errors----------------------------
+ bot.catch((err, ctx) => {
+  console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
+ })
