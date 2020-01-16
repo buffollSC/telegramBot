@@ -20,7 +20,7 @@ const appURL = process.env.APP_appURL || applicationURL;
 const databaseURL = process.env.DATABASE_URL || dataBase;
 
 const arrInfaForExpCard = [];
-const arrDateForExpCard = [];
+const arrDateForExpCard;
 const arrLoginAndPassword = [];
 //------------------------Menu-----------------------------------------
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
@@ -146,7 +146,7 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     }
   }, 
   (ctx) => {
-    arrInfaForExpCard.push(ctx.message.text);
+    arrDateForExpCard.push(ctx.message.text);
     ctx.reply('Введите сумму в поле Amount?');
     return ctx.wizard.next();
   }, 
@@ -158,16 +158,16 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
   //-------------Record in salesforce database-------------------
   (ctx) => {
     arrInfaForExpCard.push(ctx.message.text)
-    let Amount = arrInfaForExpCard[1];
-    let Description = arrInfaForExpCard[2];
+    let Amount = arrInfaForExpCard[0];
+    let Description = arrInfaForExpCard[1];
     let userId = ctx.scene.session.state.allInformation[0];
     let cardDate = new Date().toUTCString();
-    if (arrInfaForExpCard.length != 0) {
-      cardDate = new Date(arrInfaForExpCard[0]).toUTCString();
+    if (arrDateForExpCard.length != 0) {
+      cardDate = new Date(arrDateForExpCard).toUTCString();
     }
     setExpenseCard(Amount, Description, userId, cardDate);
     arrInfaForExpCard.length = 0;
-    //arrDateForExpCard.length = 0;
+    arrDateForExpCard = 0;
     ctx.reply('Запрос обработан.', successLogin);
     return ctx.wizard.selectStep(3);
     }
