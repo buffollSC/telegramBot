@@ -2,9 +2,9 @@
   "name": "telebot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src.js"
   },
   "engines": {
     "node": "13.5.0"
