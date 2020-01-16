@@ -75,6 +75,7 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
 };
 const getBalance = async (valueId) => {
   let arrQuery = [];
+  totalAmount = 0;
   const allInformation = await client
   .query(`SELECT sfid, Reminder__c, Keeper__c 
   FROM salesforce.Monthly_Expense__c 
@@ -85,9 +86,6 @@ const getBalance = async (valueId) => {
         arrQuery.push(value);
       }
     }
-  }
-  if (!arrQuery.length) {
-    totalAmount = 0;
   }
   const totalAmountValue = (current, currentValue) => current + currentValue;
   var totalAmount = arrQuery.reduce(totalAmountValue);
