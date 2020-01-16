@@ -2,26 +2,37 @@ const myToken = '995308759:AAG0cSOOdlAP8r3n6tnaXtBx0wArse89YDA';
 const port = "5010";
 const dataBase = "postgres://lfodygkpkxwiut:97c34dfaa384d8fae43c0ad8db1e3acec41a5ba9eb618eb74557116f2e5b8dbf@ec2-54-228-246-214.eu-west-1.compute.amazonaws.com:5432/ddf4globq3eaio";
 const applicationURL = 'https://heroku-telegram-bots.herokuapp.com:443';
-
 const Telegraf = require('telegraf');
-const Composer = require('telegraf/composer');
+const telegrafComposer = require('telegraf/composer');
 const session = require('telegraf/session');
-const Stage = require('telegraf/stage');
-const Markup = require('telegraf/markup');
-const WizardScene = require('telegraf/scenes/wizard');
+const telegrafStage = require('telegraf/stage');
+const markup = require('telegraf/markup');
+const telegrafScenesWizard = require('telegraf/scenes/wizard');
 const extra = require('telegraf/extra');
-
 const { Client } = require('pg');
-
-const arrCreatCard = [];
-const arrDate = [];
-const arrLoginAndPassword = [];
-
 const API_TOKEN = process.env.TOKEN || myToken;
 const PORT = process.env.PORT || port;
 const URL = process.env.APP_URL || applicationURL;
+const arrInfaForExpCard = [];
+const arrDateForExpCard = [];
+const arrLoginAndPassword = [];
 
-//-----------------------------------------------------------------
+//-----------Creat bot-----------------------------------------
+client.connect();
+const bot = new Telegraf(API_TOKEN);
+bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
+bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
+
+const stage = new telegrafStage([authorizationUser], { default: 'authorization-User' });
+bot.use(session());
+bot.use(stage.middleware());
+bot.launch();
+//---------------------Handler errors----------------------------
+bot.catch((err, ctx) => {
+  console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
+})
+
+//------------------------Menu-----------------------------------------
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
   msg.callbackButton('Текущий баланс', 'balance'),
   msg.callbackButton('Создать карточку', 'createCard'),
@@ -32,29 +43,28 @@ const createExpenseCard = extra.markdown().markup((msg) => msg.inlineKeyboard([
   msg.callbackButton('Календарь', 'calendar'),
   msg.callbackButton('Отмена', 'cancel')
 ]))
-//------------------------------------------------------------------
+//---------------------Connection to database---------------------------
 let client = new Client({
     connectionString: process.env.DATABASE_URL || dataBase,
     ssl: true
 });
-
-const stepHandler = new Composer();
-stepHandler.action('balance', async (ctx) => {
+//---------------------Steps for user-----------------------------------
+const stepForUser = new telegrafComposer();
+stepForUser.action('balance', async (ctx) => {
   let userId = ctx.scene.session.state.allInformation[0];
   const allInformationId = await getBalance(userId);
   ctx.reply(`Текущий баланс: ${allInformationId}$`, successLogin);
   return 0;
 })
-stepHandler.action('logout', async (ctx) => {
+stepForUser.action('logout', async (ctx) => {
   ctx.reply('Для авторизации нажмите любую кнопку');
   return ctx.scene.leave();
 })
-stepHandler.action('createCard', (ctx) => {
+stepForUser.action('createCard', (ctx) => {
   ctx.reply(`На какой день хотите создать карту?`, createExpenseCard)
   return ctx.wizard.next()
 })
-stepHandler.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successLogin));
-
+//-------------------Method for get Login and Password--------------
 const getDataForAuthorization = async(valueLogin, valuePassword) => {
   let arrReturn = [];
   const allInformation = await client
@@ -62,7 +72,6 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
     FROM salesforce.contact 
     WHERE email = '${valueLogin}'
     AND password__c = '${valuePassword}';`)
-
   for (let [keys, values] of Object.entries(allInformation.rows)) {
     for (let [key, value] of Object.entries(values)) {
       arrReturn.push(value);
@@ -73,6 +82,7 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
   }
   return arrReturn;
 };
+//-----------------Method for get Balance--------------------------
 const getBalance = async (valueId) => {
   let arrQuery = [];
   totalAmount = 0;
@@ -91,15 +101,15 @@ const getBalance = async (valueId) => {
   var totalAmount = arrQuery.reduce(totalAmountValue);
   return totalAmount;
 };
-
-const setBalance = async (Amount, Description, userId, cardDate) => {
+//-----------------Method for set Expense card -------------------------
+const setExpenseCard = async (Amount, Description, userId, cardDate) => {
   var parsedAmount = parseFloat(Amount, 10);
   await client
   .query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
-
-const superWizard = new WizardScene('super-wizard',
+//-----------------------Authorization----------------------------------
+const authorizationUser = new telegrafScenesWizard('authorization-User',
   (ctx) => {
     ctx.scene.session.state = {}
     ctx.reply('Для авторизации введите логин или email: ');
@@ -127,8 +137,8 @@ const superWizard = new WizardScene('super-wizard',
       return ctx.scene.leave();
     }
   },
-
-  stepHandler,
+//----------------Steps after clicked on button "Создать карточку"-------
+  stepForUser,
   (ctx) => {
     let callbackData = ctx.update.callback_query.data;
     ctx.scene.session.state.allInformation.push(callbackData);
@@ -147,46 +157,32 @@ const superWizard = new WizardScene('super-wizard',
     }
   }, 
   (ctx) => {
-    arrDate.push(ctx.message.text);
+    arrDateForExpCard.push(ctx.message.text);
     ctx.reply('Введите сумму в поле Amount?');
     return ctx.wizard.next();
   }, 
   (ctx) => {
-    arrCreatCard.push(ctx.message.text);
+    arrInfaForExpCard.push(ctx.message.text);
     ctx.reply('Напишите описание в поле Description?');
     return ctx.wizard.next();
   }, 
+  //-------------Record in salesforce database-------------------
   (ctx) => {
-    arrCreatCard.push(ctx.message.text)
-    
-    let Amount = arrCreatCard[0];
-    let Description = arrCreatCard[1];
+    arrInfaForExpCard.push(ctx.message.text)
+
+    let Amount = arrInfaForExpCard[0];
+    let Description = arrInfaForExpCard[1];
     let userId = ctx.scene.session.state.allInformation[0];
     let cardDate = new Date().toUTCString();
   
-    if (arrDate.length != 0) {
-      cardDate = new Date(arrDate[0]).toUTCString();
+    if (arrDateForExpCard.length != 0) {
+      cardDate = new Date(arrDateForExpCard[0]).toUTCString();
     }
 
-    setBalance(Amount, Description, userId, cardDate);
-    arrCreatCard.length = 0;
-    arrDate.length = 0;
+    setExpenseCard(Amount, Description, userId, cardDate);
+    arrInfaForExpCard.length = 0;
+    arrDateForExpCard.length = 0;
     ctx.reply('Запрос обработан.', successLogin);
     return ctx.wizard.selectStep(3);
     }
   )
-
- 
-  client.connect();
-  const bot = new Telegraf(API_TOKEN);
-  bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
-  bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
-  
-  const stage = new Stage([superWizard], { default: 'super-wizard' });
-  bot.use(session());
-  bot.use(stage.middleware());
-  bot.launch();
-
-  bot.catch((err, ctx) => {
-    console.log(`Ooops, ecountered an error for ${ctx.updateType}`, err)
-  })
