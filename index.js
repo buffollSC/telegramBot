@@ -158,14 +158,15 @@ const superWizard = new WizardScene('super-wizard',
   }, 
   (ctx) => {
     arrCreatCard.push(ctx.message.text)
-    let userId = ctx.scene.session.state.allInformation[0];
+    
     let Amount = arrCreatCard[0];
     let Description = arrCreatCard[1];
-    let cardDate = new Date(arrDate[0]).toUTCString();
+    let userId = ctx.scene.session.state.allInformation[0];
+    let cardDate = new Date().toUTCString();
   
-    // if (arrDate.length !== 0) {
-    //   cardDate = new Date().toUTCString();
-    // }
+    if (arrDate.length != 0) {
+      cardDate = new Date(arrDate[0]).toUTCString();
+    }
 
     setBalance(Amount, Description, userId, cardDate);
     arrCreatCard.length = 0;
