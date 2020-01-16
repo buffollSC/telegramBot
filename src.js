@@ -93,10 +93,9 @@ const getBalance = async (valueId) => {
 };
 //-----------------Method for set Expense card -------------------------
 const setExpenseCard = async (Amount, Description, userId, cardDate) => {
-  var parsedAmount = parseFloat(Amount, 10);
   await client
   .query(`INSERT INTO salesforce.Expense_Card__c(Name, Amount__c, Card_Keeper__c, Card_Date__c, Description__c, ExterId__c)
-  VALUES('${Description}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`);
+  VALUES('${Description}', ${Amount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`);
 };
 //-----------------------Authorization----------------------------------
 const authorizationUser = new telegrafScenesWizard('authorization-User',
@@ -118,7 +117,7 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     arrLoginAndPassword.length = 0;
     if (allInformation.length === 4) {
       ctx.scene.session.state = {
-        allInformation : allInformation
+        allInformation : allInformations
       }
       ctx.reply('Авторизация прошла успешно', successLogin);
       return ctx.wizard.next();
