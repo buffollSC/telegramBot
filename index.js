@@ -1,4 +1,5 @@
-// Turned to the material : https://github.com/telegraf/telegraf/tree/develop/docs/examples
+// Turned to the material : https://github.com/telegraf/telegraf/tree/develop/docs/examples 
+// Turned to the video : https://www.youtube.com/watch?reload=9&v=IuUY-OJ0GXE
 // My git : https://github.com/buffollSC
 const myToken = '995308759:AAG0cSOOdlAP8r3n6tnaXtBx0wArse89YDA';
 const port = "5020";
