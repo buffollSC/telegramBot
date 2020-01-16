@@ -67,7 +67,7 @@ const getDataForAuthorization = async(valueLogin, valuePassword) => {
       arrReturn.push(value);
     }
   }
-  if (!arrReturn.length) {
+  if (arrReturn.length != 0) {
     arrReturn.length = 0;
   }
   return arrReturn;
@@ -115,13 +115,13 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     Password = arrLoginAndPassword[1];
     const allInformation = await getDataForAuthorization(Login, Password)
     arrLoginAndPassword.length = 0;
-    if (allInformation.length === 4) {
+    if (allInformation.length == 4) {
       ctx.scene.session.state = {
         allInformation : allInformation
       }
       ctx.reply('Авторизация прошла успешно', successLogin);
       return ctx.wizard.next();
-    }else if(allInformation.length === 0) {
+    }else if(allInformation.length == 0) {
       ctx.reply('Неправильный логин и/или пароль,напишете что-нибудь для повторной авторизации');
       return ctx.scene.leave();
     }
