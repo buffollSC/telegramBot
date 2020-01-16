@@ -146,7 +146,7 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     }
   }, 
   (ctx) => {
-    arrDateForExpCard.push(ctx.message.text);
+    arrInfaForExpCard.push(ctx.message.text);
     ctx.reply('Введите сумму в поле Amount?');
     return ctx.wizard.next();
   }, 
@@ -158,16 +158,16 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
   //-------------Record in salesforce database-------------------
   (ctx) => {
     arrInfaForExpCard.push(ctx.message.text)
-    let Amount = arrInfaForExpCard[0];
-    let Description = arrInfaForExpCard[1];
+    let Amount = arrInfaForExpCard[1];
+    let Description = arrInfaForExpCard[2];
     let userId = ctx.scene.session.state.allInformation[0];
     let cardDate = new Date().toUTCString();
-    if (arrDateForExpCard.length != 0) {
-      cardDate = new Date(arrDateForExpCard[0]).toUTCString();
+    if (arrInfaForExpCard.length != 0) {
+      cardDate = new Date(arrInfaForExpCard[0]).toUTCString();
     }
     setExpenseCard(Amount, Description, userId, cardDate);
     arrInfaForExpCard.length = 0;
-    arrDateForExpCard.length = 0;
+    //arrDateForExpCard.length = 0;
     ctx.reply('Запрос обработан.', successLogin);
     return ctx.wizard.selectStep(3);
     }
