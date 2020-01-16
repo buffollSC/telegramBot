@@ -17,8 +17,6 @@ const arrInfaForExpCard = [];
 const arrDateForExpCard = [];
 const arrLoginAndPassword = [];
 
-
-
 //------------------------Menu-----------------------------------------
 const successLogin = extra.markdown().markup((msg) => msg.inlineKeyboard([
   msg.callbackButton('Текущий баланс', 'balance'),
@@ -96,7 +94,7 @@ const setExpenseCard = async (Amount, Description, userId, cardDate) => {
   VALUES('${userId}', ${parsedAmount}, '${userId}', '${cardDate}', '${Description}', gen_random_uuid());`)
 };
 
-stepForUser.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successMsg))
+//stepForUser.use((ctx) => ctx.replyWithMarkdown('Авторизация прошла успешно', successMsg))
 
 //-----------------------Authorization----------------------------------
 const authorizationUser = new telegrafScenesWizard('authorization-User',
@@ -176,11 +174,11 @@ const authorizationUser = new telegrafScenesWizard('authorization-User',
     return ctx.wizard.selectStep(3);
     }
   )
+  client.connect();
 //-----------Creat bot-----------------------------------------
- client.connect();
- const bot = new Telegraf(API_TOKEN);
- bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
- bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
+ const bot = new Telegraf(myToken);
+ bot.telegram.setWebhook(`${applicationURL}/bot${myToken}`);
+ bot.startWebhook(`/bot${myToken}`, null, port);
 
  const stage = new telegrafStage([authorizationUser], { default: 'authorization-User' });
  bot.use(session());
